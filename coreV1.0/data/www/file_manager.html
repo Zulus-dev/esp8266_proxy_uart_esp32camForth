@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP8266 File Manager</title>
+  <link rel="stylesheet" href="/www/css/styles.css" />
+</head>
+<body>
+  <main class="terminal-app">
+    <header class="terminal-header">
+      <h1>File manager (две панели)</h1>
+      <div class="top-links"><a href="/www/index.html">← Меню</a></div>
+    </header>
+
+    <section class="fm-actions controls">
+      <button id="btn-open" type="button">Открыть</button>
+      <button id="btn-rename" type="button">Переименовать</button>
+      <button id="btn-copy" type="button">Копировать →</button>
+      <button id="btn-delete" type="button" class="ghost">Удалить</button>
+      <button id="btn-mkdir" type="button">Новая папка</button>
+      <button id="btn-refresh" type="button" class="ghost">Обновить</button>
+    </section>
+
+    <section class="fm-grid">
+      <article class="fm-pane" data-pane="left">
+        <h2>Панель A: <span class="fm-path" id="path-left">/</span></h2>
+        <ul id="list-left" class="fm-list"></ul>
+      </article>
+      <article class="fm-pane" data-pane="right">
+        <h2>Панель B: <span class="fm-path" id="path-right">/</span></h2>
+        <ul id="list-right" class="fm-list"></ul>
+      </article>
+    </section>
+
+    <p id="fm-status" class="hint"></p>
+  </main>
+
+  <script src="/www/js/file_manager.js"></script>
+</body>
+</html>

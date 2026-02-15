@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP8266 UART Terminal</title>
+  <link rel="stylesheet" href="/www/css/styles.css" />
+</head>
+<body>
+  <main class="terminal-app">
+    <header class="terminal-header">
+      <h1>ESP8266 ⇄ ESP32Forth UART</h1>
+      <p id="status" class="status status-offline">WS: отключено</p>
+    </header>
+
+    <section class="terminal-wrap">
+      <pre id="terminal" class="terminal" aria-live="polite"></pre>
+    </section>
+
+    <form id="send-form" class="controls" autocomplete="off">
+      <textarea id="command" rows="2" placeholder="Введите команду Forth и нажмите Enter" spellcheck="false"></textarea>
+      <button type="submit">Отправить</button>
+      <button id="clear" type="button" class="ghost">Очистить</button>
+    </form>
+
+    <div class="top-links"><a href="/www/index.html">← Меню</a></div>
+  </main>
+
+  <script src="/www/js/app.js"></script>
+</body>
+</html>

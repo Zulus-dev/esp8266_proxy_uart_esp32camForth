@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP8266 Control Panel</title>
+  <link rel="stylesheet" href="/www/css/styles.css" />
+</head>
+<body>
+  <main class="terminal-app home-menu">
+    <header class="terminal-header">
+      <h1>ESP8266 Proxy Control</h1>
+    </header>
+
+    <p class="hint">Выберите нужный режим работы.</p>
+
+    <nav class="menu-grid">
+      <a class="menu-card" href="/www/terminal.html">Terminal</a>
+      <a class="menu-card" href="/www/file_manager.html">File manager</a>
+      <a class="menu-card" href="/www/ide_editor.html">IDE editor</a>
+    </nav>
+
+    <section class="system-panel">
+      <h2>System monitor</h2>
+      <pre class="system-status" data-system-status>Loading...</pre>
+    </section>
+  </main>
+
+  <script src="/www/js/status.js"></script>
+</body>
+</html>

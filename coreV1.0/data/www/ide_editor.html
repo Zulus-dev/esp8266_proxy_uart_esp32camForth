@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP8266 IDE Editor</title>
+  <link rel="stylesheet" href="/www/css/styles.css" />
+</head>
+<body>
+  <main class="terminal-app">
+    <header class="terminal-header">
+      <h1>IDE editor</h1>
+      <div class="top-links">
+        <a href="/www/file_manager.html">← File manager</a>
+        <a href="/www/index.html">Меню</a>
+      </div>
+    </header>
+
+    <form id="editor-form" class="editor-form">
+      <label class="hint" for="editor-path">Файл</label>
+      <input id="editor-path" type="text" placeholder="/www/example.txt" />
+      <textarea id="editor-content" class="editor-area" spellcheck="false"></textarea>
+      <section class="controls">
+        <button id="btn-load" type="button">Открыть</button>
+        <button id="btn-save" type="submit">Сохранить</button>
+      </section>
+    </form>
+
+    <p id="editor-status" class="hint"></p>
+  </main>
+
+  <script src="/www/js/ide_editor.js"></script>
+</body>
+</html>
