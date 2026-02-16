@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP8266 Settings</title>
+  <link rel="stylesheet" href="/www/css/styles.css" />
+</head>
+<body>
+  <main class="terminal-app">
+    <header class="terminal-header">
+      <h1>Настройки ESP8266</h1>
+      <p id="settings-status" class="status status-offline">Не сохранено</p>
+    </header>
+
+    <form id="settings-form" class="settings-form" autocomplete="off">
+      <label class="settings-row">
+        SSID
+        <input id="wifi-ssid" type="text" maxlength="31" required />
+      </label>
+
+      <label class="settings-row">
+        Пароль Wi‑Fi
+        <input id="wifi-pass" type="text" maxlength="63" />
+      </label>
+
+      <label class="settings-row">
+        MAC AP (AA:BB:CC:DD:EE:FF)
+        <input id="wifi-mac" type="text" maxlength="17" placeholder="опционально" />
+      </label>
+
+      <div class="settings-actions">
+        <button type="submit">Сохранить настройки</button>
+        <button id="restart-device" type="button" class="ghost">Сохранить и перезагрузить</button>
+      </div>
+    </form>
+
+    <p class="hint">После изменения SSID / пароля точка доступа будет перезапущена. MAC применяется если поддерживается SDK.</p>
+
+    <div class="top-links"><a href="/www/index.html">← Меню</a></div>
+  </main>
+
+  <script src="/www/js/settings.js"></script>
+</body>
+</html>
