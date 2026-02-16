@@ -25,6 +25,7 @@ void setup() {
 
   loadConfig();
   WiFi.mode(WIFI_AP);
+  applyConfiguredSoftApMac();
   WiFi.softAP(configSSID, configPASS);
   registerFSHandlers(server);
   registerUARTHandlers(server);

@@ -4,10 +4,6 @@
 #include <ArduinoJson.h>
 #include "config_module.h"
 
-extern "C" {
-  #include <user_interface.h>
-}
-
 static char jsonResponse[1536];
 
 static const char* wifiModeToText(WiFiMode_t mode) {
@@ -17,25 +13,18 @@ static const char* wifiModeToText(WiFiMode_t mode) {
   return "OFF";
 }
 
-static bool parseMac(const String& macText, uint8_t* out) {
+static bool isValidMac(const String& macText) {
   if (macText.length() != 17) return false;
 
-  for (int i = 0; i < 6; i++) {
-    char high = macText[i * 3];
-    char low = macText[i * 3 + 1];
-    if (i < 5 && macText[i * 3 + 2] != ':') return false;
+  for (int i = 0; i < 17; i++) {
+    if (i % 3 == 2) {
+      if (macText[i] != ':') return false;
+      continue;
+    }
 
-    auto hexVal = [](char ch) -> int {
-      if (ch >= '0' && ch <= '9') return ch - '0';
-      if (ch >= 'A' && ch <= 'F') return ch - 'A' + 10;
-      if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
-      return -1;
-    };
-
-    int hi = hexVal(high);
-    int lo = hexVal(low);
-    if (hi < 0 || lo < 0) return false;
-    out[i] = (uint8_t)((hi << 4) | lo);
+    char ch = macText[i];
+    bool isHex = (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f');
+    if (!isHex) return false;
   }
 
   return true;
@@ -96,6 +85,7 @@ void handleSettingsGet(AsyncWebServerRequest *request) {
   StaticJsonDocument<256> doc;
   doc["ssid"] = configSSID;
   doc["pass"] = configPASS;
+  doc["mac"] = configMAC;
   doc["ap_mac"] = WiFi.softAPmacAddress();
 
   char out[256];
@@ -111,6 +101,10 @@ void handleSettingsSave(AsyncWebServerRequest *request) {
 
   String ssid = request->getParam("ssid", true)->value();
   String pass = request->getParam("pass", true)->value();
+  String mac = request->hasParam("mac", true) ? request->getParam("mac", true)->value() : "";
+
+  ssid.trim();
+  mac.trim();
 
   if (ssid.length() < 1 || ssid.length() >= sizeof(configSSID)) {
     request->send(400, "application/json", "{\"error\":\"invalid ssid length\"}");
@@ -122,35 +116,22 @@ void handleSettingsSave(AsyncWebServerRequest *request) {
     return;
   }
 
-  strlcpy(configSSID, ssid.c_str(), sizeof(configSSID));
-  strlcpy(configPASS, pass.c_str(), sizeof(configPASS));
-  saveConfig(configSSID, configPASS);
-
-  bool macApplied = false;
-  String macInput;
-  if (request->hasParam("mac", true)) {
-    macInput = request->getParam("mac", true)->value();
-    macInput.trim();
-
-    if (macInput.length() > 0) {
-      uint8_t macBytes[6];
-      if (!parseMac(macInput, macBytes)) {
-        request->send(400, "application/json", "{\"error\":\"invalid MAC format (AA:BB:CC:DD:EE:FF)\"}");
-        return;
-      }
-
-      macApplied = wifi_set_macaddr(SOFTAP_IF, macBytes);
-    }
+  if (mac.length() > 0 && !isValidMac(mac)) {
+    request->send(400, "application/json", "{\"error\":\"invalid MAC format (AA:BB:CC:DD:EE:FF)\"}");
+    return;
   }
 
-  WiFi.softAPdisconnect(true);
-  WiFi.softAP(configSSID, configPASS);
+  strlcpy(configSSID, ssid.c_str(), sizeof(configSSID));
+  strlcpy(configPASS, pass.c_str(), sizeof(configPASS));
+  strlcpy(configMAC, mac.c_str(), sizeof(configMAC));
+  saveConfig(configSSID, configPASS, configMAC);
 
   StaticJsonDocument<320> doc;
   doc["ok"] = true;
   doc["ssid"] = configSSID;
+  doc["mac"] = configMAC;
   doc["ap_mac"] = WiFi.softAPmacAddress();
-  doc["mac_applied"] = macApplied;
+  doc["requires_restart"] = true;
 
   char out[320];
   serializeJson(doc, out, sizeof(out));

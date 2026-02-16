@@ -14,6 +14,9 @@ if (!terminal || !statusLabel || !form || !commandInput || !clearButton || !macr
   let ws;
   let reconnectTimer;
   let macros = [];
+  let reconnectAttempt = 0;
+  let hadOpenConnection = false;
+  let disconnectNotified = false;
 
   function appendTerminal(text) {
     terminal.textContent += text;
@@ -126,7 +129,18 @@ if (!terminal || !statusLabel || !form || !commandInput || !clearButton || !macr
     }
   }
 
+  function scheduleReconnect() {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(connectWS, 2000);
+  }
+
   function connectWS() {
+    clearTimeout(reconnectTimer);
+
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
+
     const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
     const socketUrl = `${protocol}://${location.hostname}:81/`;
 
@@ -134,7 +148,16 @@ if (!terminal || !statusLabel || !form || !commandInput || !clearButton || !macr
 
     ws.addEventListener('open', () => {
       setStatus(true);
-      appendSystemMessage('подключено');
+      reconnectAttempt = 0;
+
+      if (!hadOpenConnection) {
+        appendSystemMessage('подключено');
+      } else if (disconnectNotified) {
+        appendSystemMessage('соединение восстановлено');
+      }
+
+      hadOpenConnection = true;
+      disconnectNotified = false;
     });
 
     ws.addEventListener('message', (event) => {
@@ -143,13 +166,20 @@ if (!terminal || !statusLabel || !form || !commandInput || !clearButton || !macr
 
     ws.addEventListener('close', () => {
       setStatus(false);
-      appendSystemMessage('соединение потеряно, переподключение через 2с');
-      clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connectWS, 2000);
+      reconnectAttempt += 1;
+
+      if (!disconnectNotified) {
+        appendSystemMessage('соединение потеряно, переподключение...');
+        disconnectNotified = true;
+      }
+
+      scheduleReconnect();
     });
 
     ws.addEventListener('error', () => {
-      ws.close();
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
     });
   }
 
@@ -193,6 +223,13 @@ if (!terminal || !statusLabel || !form || !commandInput || !clearButton || !macr
 
   clearButton.addEventListener('click', () => {
     terminal.textContent = '';
+  });
+
+  window.addEventListener('beforeunload', () => {
+    clearTimeout(reconnectTimer);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.close();
+    }
   });
 
   setStatus(false);

@@ -19,7 +19,7 @@ async function loadSettings() {
     const data = await response.json();
     ssidInput.value = data.ssid || '';
     passInput.value = data.pass || '';
-    macInput.value = data.ap_mac || '';
+    macInput.value = data.mac || '';
     setStatus('Загружено', true);
   } catch (error) {
     setStatus(`Ошибка: ${error.message}`);
@@ -45,8 +45,8 @@ async function saveSettings() {
   }
 
   const data = await response.json();
-  macInput.value = data.ap_mac || macInput.value;
-  setStatus('Сохранено', true);
+  macInput.value = data.mac || '';
+  setStatus('Сохранено (нужна перезагрузка)', true);
 }
 
 form.addEventListener('submit', async (event) => {
