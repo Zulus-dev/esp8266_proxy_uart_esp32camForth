@@ -13,6 +13,18 @@
       <p id="status" class="status status-offline">WS: отключено</p>
     </header>
 
+    <details class="macro-menu">
+      <summary>Программируемые кнопки</summary>
+
+      <form id="macro-form" class="macro-form" autocomplete="off">
+        <input id="macro-name" type="text" maxlength="24" placeholder="Название кнопки" required />
+        <textarea id="macro-command" rows="2" placeholder="Команда / макрос для UART" required></textarea>
+        <button type="submit">Добавить кнопку</button>
+      </form>
+
+      <div id="macro-buttons" class="macro-buttons"></div>
+    </details>
+
     <section class="terminal-wrap">
       <pre id="terminal" class="terminal" aria-live="polite"></pre>
     </section>
